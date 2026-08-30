@@ -34,7 +34,7 @@ const checkCorrectAnswer = (answer: number, question: Question) => {
         <p class="text-2xl border rounded-2xl p-5 mb-4">
           {{ question.text }}
         </p>
-        <div class="flex flex-wrap justify-around gap-4 mb-16">
+        <div class="flex flex-wrap md:flex-nowrap justify-around gap-4 mb-16">
           <Button
             v-for="(answer, answer_idx) in question.answers"
             :key="answer_idx"
