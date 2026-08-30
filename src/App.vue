@@ -11,7 +11,11 @@ interface Question {
   chosen_anwser_index?: number;
 }
 
-const questions = ref<Question[]>(data.questions);
+const questions = ref<Question[]>(
+  data.questions
+    .map((q) => ({ ...q, rng: Math.random() }))
+    .sort((a, b) => a.rng - b.rng),
+);
 
 const checkCorrectAnswer = (answer: number, question: Question) => {
   questions.value = questions.value.map((q) =>
