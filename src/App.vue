@@ -1,46 +1,57 @@
 <script setup lang="ts">
 import { Button } from "primevue";
-import data_test from "../data.json";
-import data_true_or_false from "../true_or_false.json";
+import data_test from "/data/data.json";
+import data_test2 from "/data/data2.json";
+import data_true_or_false from "/data/true_or_false.json";
+import data_true_or_false2 from "/data/true_or_false2.json";
 import { ref } from "vue";
 
-interface Test {
+interface Test<T> {
   id: number;
   quiz_title: string;
-  questions: Question[];
+  questions: Question<T>[];
 }
 
-interface Question {
+interface Question<T> {
   id: number;
-  answers: string[];
+  answers: T[];
   text: string;
   source: string;
   correct_answer_index: number;
   chosen_anwser_index?: number;
 }
 
-data_test.questions = data_test.questions
-  .map((q) => ({ ...q, rng: Math.random() }))
-  .sort((a, b) => a.rng - b.rng);
+type TestPretransform = Omit<Test<any>, "id">;
+const tests_pre_transform = [
+  data_test,
+  data_test2,
+  data_true_or_false,
+  data_true_or_false2,
+];
 
-data_true_or_false.questions = data_true_or_false.questions
-  .map((q) => ({ ...q, rng: Math.random() }))
-  .sort((a, b) => a.rng - b.rng);
+const transformTest = (test: TestPretransform) => {
+  test.questions = test.questions
+    .map((q) => ({ ...q, rng: Math.random() }))
+    .sort((a, b) => a.rng - b.rng);
+};
 
-const tests = ref<Test[]>([
-  { ...data_test, id: 0 },
-  { ...data_true_or_false, id: 1 },
-]);
+const BASE_TESTS: Test<string | boolean>[] = [];
+for (const test of tests_pre_transform) {
+  transformTest(test);
+  BASE_TESTS.push({ ...test, id: BASE_TESTS.length });
+}
+
+const tests = ref<Test<string | boolean>[]>(BASE_TESTS);
 
 const checkCorrectAnswer = (
   answer: number,
-  question: Question,
+  question: Question<string | boolean>,
   test_id: number,
 ) => {
   const test = tests.value.find((t) => t.id === test_id)!;
   const questions = test.questions.map((q) =>
     q.id === question.id
-      ? ({ ...q, chosen_anwser_index: answer } as Question)
+      ? ({ ...q, chosen_anwser_index: answer } as Question<string | boolean>)
       : q,
   );
 
@@ -63,7 +74,7 @@ const checkCorrectAnswer = (
             v-for="(answer, answer_idx) in question.answers"
             :key="answer_idx"
             class="w-80 h-40"
-            :label="answer"
+            :label="answer.toString()"
             @click="() => checkCorrectAnswer(answer_idx, question, test.id)"
             :pt="{
               label: { class: 'text-white text-2xl' },
