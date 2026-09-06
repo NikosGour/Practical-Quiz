@@ -14,6 +14,7 @@ interface Question {
   id: number;
   answers: string[];
   text: string;
+  source: string;
   correct_answer_index: number;
   chosen_anwser_index?: number;
 }
@@ -53,11 +54,11 @@ const checkCorrectAnswer = (
   <div class="flex flex-col gap-8 min-w-dvw min-h-dvh items-center py-5">
     <h1 class="text-6xl">Practical Quiz</h1>
     <div v-for="test in tests" :key="test.id" class="max-w-[80%]">
-      <div v-for="question in test.questions" :key="question.id">
+      <div v-for="question in test.questions" :key="question.id" class="mb-16">
         <p class="text-2xl border rounded-2xl p-5 mb-4">
           {{ question.text }}
         </p>
-        <div class="flex flex-wrap md:flex-nowrap justify-center gap-4 mb-16">
+        <div class="flex flex-wrap md:flex-nowrap justify-center gap-4 mb-4">
           <Button
             v-for="(answer, answer_idx) in question.answers"
             :key="answer_idx"
@@ -66,7 +67,6 @@ const checkCorrectAnswer = (
             @click="() => checkCorrectAnswer(answer_idx, question, test.id)"
             :pt="{
               label: { class: 'text-white text-2xl' },
-              // root: { class: 'bg-stone-600! border-stone-400!' },
               root: {
                 class:
                   question.chosen_anwser_index === undefined
@@ -82,6 +82,12 @@ const checkCorrectAnswer = (
             }"
           />
         </div>
+        <p
+          v-if="question.chosen_anwser_index !== undefined"
+          class="text-2xl italic border border-blue-500 rounded-2xl p-5 mb-4"
+        >
+          <u>Πηγή</u>: {{ question.source }}
+        </p>
       </div>
     </div>
   </div>
