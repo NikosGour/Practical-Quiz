@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import { Button } from "primevue";
-import data_test from "/data/data.json";
-import data_test2 from "/data/data2.json";
-import data_true_or_false from "/data/true_or_false.json";
-import data_true_or_false2 from "/data/true_or_false2.json";
 import { ref } from "vue";
 
 interface Test<T> {
@@ -22,11 +18,14 @@ interface Question<T> {
 }
 
 type TestPretransform = Omit<Test<any>, "id">;
+
+const files = import.meta.glob("/data/*.json", {
+  eager: true,
+  import: "default",
+});
+
 const tests_pre_transform = [
-  data_test,
-  data_test2,
-  data_true_or_false,
-  data_true_or_false2,
+  ...Object.values(files).map((file) => file as TestPretransform),
 ];
 
 const transformTest = (test: TestPretransform) => {
