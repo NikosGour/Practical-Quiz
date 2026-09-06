@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Button } from "primevue";
-import { ref } from "vue";
+import { Button, RadioButton } from "primevue";
+import { ref, computed } from "vue";
 
 interface Test<T> {
   id: number;
@@ -41,6 +41,10 @@ for (const test of tests_pre_transform) {
 }
 
 const tests = ref<Test<string | boolean>[]>(BASE_TESTS);
+const selected_test_id = ref<number | null>(0);
+const selected_test = computed(() =>
+  tests.value.find((t) => t.id === selected_test_id.value)!,
+);
 
 const checkCorrectAnswer = (
   answer: number,
@@ -62,9 +66,28 @@ const checkCorrectAnswer = (
 
 <template>
   <div class="flex flex-col gap-8 min-w-dvw min-h-dvh items-center py-5">
-    <h1 class="text-6xl">Practical Quiz</h1>
-    <div v-for="test in tests" :key="test.id" class="max-w-[80%]">
-      <div v-for="question in test.questions" :key="question.id" class="mb-16">
+    <h1 class="text-6xl mb-4">Practical Quiz</h1>
+    <div class="text-5xl">Tests</div>
+    <div class="max-w-[80%] flex flex-wrap items-stretch gap-4">
+      <div v-for="test in tests" :key="test.id">
+        <div class="bg-stone-500 rounded-2xl p-5">
+          <RadioButton
+            :value="test.id"
+            v-model="selected_test_id"
+            :inputId="test.id.toString()"
+          />
+          <label class="text-1xl ml-2" :for="test.id.toString()">{{
+            test.quiz_title
+          }}</label>
+        </div>
+      </div>
+    </div>
+    <div class="max-w-[80%]">
+      <div
+        v-for="question in selected_test.questions"
+        :key="question.id"
+        class="mb-16"
+      >
         <p class="text-2xl border rounded-2xl p-5 mb-4">
           {{ question.text }}
         </p>
@@ -74,7 +97,9 @@ const checkCorrectAnswer = (
             :key="answer_idx"
             class="w-80 h-40"
             :label="answer.toString()"
-            @click="() => checkCorrectAnswer(answer_idx, question, test.id)"
+            @click="
+              () => checkCorrectAnswer(answer_idx, question, selected_test.id)
+            "
             :pt="{
               label: { class: 'text-white text-2xl' },
               root: {
