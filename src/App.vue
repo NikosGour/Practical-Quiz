@@ -70,16 +70,19 @@ const checkCorrectAnswer = (
     <div class="text-5xl">Tests</div>
     <div class="max-w-[80%] flex flex-wrap items-stretch gap-4">
       <div v-for="test in tests" :key="test.id">
-        <div class="bg-stone-500 rounded-2xl p-5">
+        <label
+          class="bg-stone-500 rounded-2xl p-5 inline-flex"
+          :for="test.id.toString()"
+        >
           <RadioButton
             :value="test.id"
             v-model="selected_test_id"
             :inputId="test.id.toString()"
           />
-          <label class="text-1xl ml-2" :for="test.id.toString()">{{
-            test.quiz_title
-          }}</label>
-        </div>
+          <span class="text-1xl ml-2" :for="test.id.toString()">
+            {{ test.quiz_title }}
+          </span>
+        </label>
       </div>
     </div>
     <div class="max-w-[80%]">
